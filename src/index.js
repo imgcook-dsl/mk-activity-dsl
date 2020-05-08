@@ -53,7 +53,7 @@ module.exports = function(schema, option) {
     // 1vw = width / 100
     const _w = (width / 100);
 
-    // 1rem = width / 100
+    // 1rem = width / 7.5
     const _rem = (width / 7.5);
 
     const _ratio = width / viewportWidth;
