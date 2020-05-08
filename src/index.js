@@ -49,8 +49,12 @@ module.exports = function(schema, option) {
     const width = option.responsive.width || 750;
     const viewportWidth = option.responsive.viewportWidth || 375;
 
+
+    // 1vw = width / 100
+    const _w = (width / 100);
+
     // 1rem = width / 100
-    const _rem = (width / 100);
+    const _rem = (width / 7.5);
 
     const _ratio = width / viewportWidth;
 
@@ -115,8 +119,44 @@ module.exports = function(schema, option) {
         return less;
     };
 
-    // convert to responsive unit, such as rem
+    // convert to responsive unit, such as vw
     const parseStyle = (styles) => {
+        for (let style in styles) {
+            for (let key in styles[style]) {
+                switch (key) {
+                    case 'fontSize':
+                    case 'marginTop':
+                    case 'marginBottom':
+                    case 'paddingTop':
+                    case 'paddingBottom':
+                    case 'height':
+                    case 'top':
+                    case 'bottom':
+                    case 'width':
+                    case 'maxWidth':
+                    case 'left':
+                    case 'right':
+                    case 'paddingRight':
+                    case 'paddingLeft':
+                    case 'marginLeft':
+                    case 'marginRight':
+                    case 'lineHeight':
+                    case 'borderBottomRightRadius':
+                    case 'borderBottomLeftRadius':
+                    case 'borderTopRightRadius':
+                    case 'borderTopLeftRadius':
+                    case 'borderRadius':
+                        styles[style][key] = (parseInt(styles[style][key]) / _w).toFixed(2) + 'vw';
+                        break;
+                }
+            }
+        }
+
+        return styles;
+    }
+
+    // convert to responsive unit, such as rem
+    const parseStyleRem = (styles) => {
         for (let style in styles) {
             for (let key in styles[style]) {
                 switch (key) {
@@ -469,7 +509,7 @@ module.exports = function(schema, option) {
             // },
             {
                 panelName: `style.less`,
-                panelValue: prettier.format(generateLess(schema, parseStyle(style)), { parser: 'less' }),
+                panelValue: prettier.format(generateLess(schema, parseStyleRem(style)), { parser: 'less' }),
                 panelType: 'less'
             },
             // {
