@@ -26,6 +26,9 @@ module.exports = function(schema, option) {
     // styles
     const styles = [];
 
+    // inline style
+    const style = {};
+
     const styles4vw = [];
 
     // box relative style
