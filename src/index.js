@@ -49,8 +49,8 @@ module.exports = function(schema, option) {
     const width = option.responsive.width || 750;
     const viewportWidth = option.responsive.viewportWidth || 375;
 
-    // 1vw = width / 100
-    const _w = (width / 100);
+    // 1rem = width / 100
+    const _rem = (width / 100);
 
     const _ratio = width / viewportWidth;
 
@@ -115,7 +115,7 @@ module.exports = function(schema, option) {
         return less;
     };
 
-    // convert to responsive unit, such as vw
+    // convert to responsive unit, such as rem
     const parseStyle = (styles) => {
         for (let style in styles) {
             for (let key in styles[style]) {
@@ -142,7 +142,7 @@ module.exports = function(schema, option) {
                     case 'borderTopRightRadius':
                     case 'borderTopLeftRadius':
                     case 'borderRadius':
-                        styles[style][key] = (parseInt(styles[style][key]) / _w).toFixed(2) + 'vw';
+                        styles[style][key] = (parseInt(styles[style][key]) / _rem).toFixed(2) + 'rem';
                         break;
                 }
             }
@@ -455,7 +455,7 @@ module.exports = function(schema, option) {
               ${lifeCycles.join(',\n')}
             }
           </script>
-          <style src="./style.less" />
+          <style src="./style.less" lang="less"/>
         `, prettierOpt),
                 panelType: 'vue',
             },
@@ -466,7 +466,7 @@ module.exports = function(schema, option) {
             // },
             {
                 panelName: `style.less`,
-                panelValue: prettier.format(generateLess(schema, style), { parser: 'less' }),
+                panelValue: prettier.format(generateLess(schema, parseStyle(style)), { parser: 'less' }),
                 panelType: 'less'
             },
             // {
@@ -482,7 +482,6 @@ module.exports = function(schema, option) {
             methods: methods,
             lifeCycles: lifeCycles,
             style: style
-
         },
         noTemplate: true
     };
