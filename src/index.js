@@ -24,12 +24,12 @@ module.exports = function(schema, option) {
     const lifeCycles = [];
 
     // styles
-    const styles = [];
+    //const styles = [];
 
     // inline style
     const style = {};
 
-    const styles4vw = [];
+    //const styles4vw = [];
 
     // box relative style
     const boxStyleList = ['fontSize', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom', 'height', 'top', 'bottom', 'width', 'maxWidth', 'left', 'right', 'paddingRight', 'paddingLeft', 'marginLeft', 'marginRight', 'lineHeight', 'borderBottomRightRadius', 'borderBottomLeftRadius', 'borderTopRightRadius', 'borderTopLeftRadius', 'borderRadius'];
@@ -116,26 +116,39 @@ module.exports = function(schema, option) {
     };
 
     // convert to responsive unit, such as vw
-    const parseStyle = (style, toVW) => {
-        const styleData = [];
-        for (let key in style) {
-            let value = style[key];
-            if (boxStyleList.indexOf(key) != -1) {
-                if (toVW) {
-                    value = (parseInt(value) / _w).toFixed(2);
-                    value = value == 0 ? value : value + 'vw';
-                } else {
-                    value = (parseInt(value)).toFixed(2);
-                    value = value == 0 ? value : value + 'px';
+    const parseStyle = (styles) => {
+        for (let style in styles) {
+            for (let key in styles[style]) {
+                switch (key) {
+                    case 'fontSize':
+                    case 'marginTop':
+                    case 'marginBottom':
+                    case 'paddingTop':
+                    case 'paddingBottom':
+                    case 'height':
+                    case 'top':
+                    case 'bottom':
+                    case 'width':
+                    case 'maxWidth':
+                    case 'left':
+                    case 'right':
+                    case 'paddingRight':
+                    case 'paddingLeft':
+                    case 'marginLeft':
+                    case 'marginRight':
+                    case 'lineHeight':
+                    case 'borderBottomRightRadius':
+                    case 'borderBottomLeftRadius':
+                    case 'borderTopRightRadius':
+                    case 'borderTopLeftRadius':
+                    case 'borderRadius':
+                        styles[style][key] = (parseInt(styles[style][key]) / _w).toFixed(2) + 'vw';
+                        break;
                 }
-                styleData.push(`${_.kebabCase(key)}: ${value}`);
-            } else if (noUnitStyles.indexOf(key) != -1) {
-                styleData.push(`${_.kebabCase(key)}: ${parseFloat(value)}`);
-            } else {
-                styleData.push(`${_.kebabCase(key)}: ${value}`);
             }
         }
-        return styleData.join(';');
+
+        return styles;
     }
 
     // parse function, return params and content
@@ -286,19 +299,10 @@ module.exports = function(schema, option) {
     const generateRender = (schema) => {
         const type = schema.componentName.toLowerCase();
         const className = schema.props && schema.props.className;
-        const classString = className ? ` class="${className}"` : '';
+        const classString = className ? ` style={styles.${className}}` : '';
 
         if (className) {
-            styles.push(`
-        .${className} {
-          ${parseStyle(schema.props.style)}
-        }
-      `);
-            styles4vw.push(`
-        .${className} {
-          ${parseStyle(schema.props.style, true)}
-        }
-      `);
+            style[className] = schema.props.style;
         }
 
         let xml;
@@ -306,23 +310,18 @@ module.exports = function(schema, option) {
 
         Object.keys(schema.props).forEach((key) => {
             if (['className', 'style', 'text', 'src'].indexOf(key) === -1) {
-                props += ` ${parsePropsKey(key, schema.props[key])}="${parseProps(schema.props[key])}"`;
+                props += ` ${key}={${parseProps(schema.props[key])}}`;
             }
         })
 
         switch (type) {
             case 'text':
                 const innerText = parseProps(schema.props.text, true);
-                xml = `<span${classString}${props}>${innerText}</span> `;
+                xml = `<span${classString}${props}>${innerText}</span>`;
                 break;
             case 'image':
-                let source = parseProps(schema.props.src, false);
-                if (!source.match('"')) {
-                    source = `"${source}"`;
-                    xml = `<img${classString}${props} :src=${source} /> `;
-                } else {
-                    xml = `<img${classString}${props} src=${source} /> `;
-                }
+                const source = parseProps(schema.props.src);
+                xml = `<img${classString}${props} src={${source}} />`;
                 break;
             case 'div':
             case 'page':
@@ -341,7 +340,9 @@ module.exports = function(schema, option) {
         }
         if (schema.condition) {
             xml = parseCondition(schema.condition, xml);
-            // console.log(xml);
+        }
+        if (schema.loop || schema.condition) {
+            xml = `{${xml}}`;
         }
 
         return xml;
@@ -454,7 +455,7 @@ module.exports = function(schema, option) {
               ${lifeCycles.join(',\n')}
             }
           </script>
-          <style src="./index.response.css" />
+          <style src="./style.less" />
         `, prettierOpt),
                 panelType: 'vue',
             },
@@ -480,7 +481,7 @@ module.exports = function(schema, option) {
             datas: datas,
             methods: methods,
             lifeCycles: lifeCycles,
-            styles: styles
+            style: style
 
         },
         noTemplate: true

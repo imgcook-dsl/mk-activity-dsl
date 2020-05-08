@@ -1,5 +1,5 @@
 <template>
-  <div class="page" />
+  <div style="{styles.page}" />
 </template>
 <script>
 export default {
@@ -11,4 +11,4 @@ export default {
   methods: {}
 };
 </script>
-<style src="./index.response.css" />
+<style src="./style.less" />
