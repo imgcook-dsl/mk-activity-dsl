@@ -1,5 +1,5 @@
 <template>
-  <div style="{styles.page}" />
+  <div class="page" />
 </template>
 <script>
 export default {

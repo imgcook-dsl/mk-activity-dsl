@@ -299,7 +299,7 @@ module.exports = function(schema, option) {
     const generateRender = (schema) => {
         const type = schema.componentName.toLowerCase();
         const className = schema.props && schema.props.className;
-        const classString = className ? ` style={styles.${className}}` : '';
+        const classString = className ? ` class="${className}"` : '';
 
         if (className) {
             style[className] = schema.props.style;
@@ -310,18 +310,23 @@ module.exports = function(schema, option) {
 
         Object.keys(schema.props).forEach((key) => {
             if (['className', 'style', 'text', 'src'].indexOf(key) === -1) {
-                props += ` ${key}={${parseProps(schema.props[key])}}`;
+                props += ` ${parsePropsKey(key, schema.props[key])}="${parseProps(schema.props[key])}"`;
             }
         })
 
         switch (type) {
             case 'text':
                 const innerText = parseProps(schema.props.text, true);
-                xml = `<span${classString}${props}>${innerText}</span>`;
+                xml = `<span${classString}${props}>${innerText}</span> `;
                 break;
             case 'image':
-                const source = parseProps(schema.props.src);
-                xml = `<img${classString}${props} src={${source}} />`;
+                let source = parseProps(schema.props.src, false);
+                if (!source.match('"')) {
+                    source = `"${source}"`;
+                    xml = `<img${classString}${props} :src=${source} /> `;
+                } else {
+                    xml = `<img${classString}${props} src=${source} /> `;
+                }
                 break;
             case 'div':
             case 'page':
@@ -340,9 +345,7 @@ module.exports = function(schema, option) {
         }
         if (schema.condition) {
             xml = parseCondition(schema.condition, xml);
-        }
-        if (schema.loop || schema.condition) {
-            xml = `{${xml}}`;
+            // console.log(xml);
         }
 
         return xml;
