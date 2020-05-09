@@ -498,7 +498,7 @@ module.exports = function(schema, option) {
               ${lifeCycles.join(',\n')}
             }
           </script>
-          <style src="./style.less" lang="less"/>
+          <style src="./style.less" lang="less" scoped/>
         `, prettierOpt),
                 panelType: 'vue',
             },
@@ -509,7 +509,7 @@ module.exports = function(schema, option) {
             // },
             {
                 panelName: `style.less`,
-                panelValue: prettier.format(generateLess(schema, parseStyleRem(style)), { parser: 'less' }),
+                panelValue: prettier.format(generateLess(schema, parseStyle(style)), { parser: 'less' }),
                 panelType: 'less'
             },
             // {
