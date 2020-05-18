@@ -230,6 +230,8 @@ module.exports = function(schema, option) {
             expressionName[name] = expressionName[name] ? expressionName[name] + 1 : 1;
             methods.push(`${name}_${expressionName[name]}(${params}) {${content}}`);
             return `${name}_${expressionName[name]}`;
+        } else {
+            return `${value}`;
         }
     }
 
@@ -388,7 +390,7 @@ module.exports = function(schema, option) {
             // console.log(xml);
         }
 
-        return xml;
+        return xml || '';
     }
 
     // parse schema
