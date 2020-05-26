@@ -404,7 +404,7 @@ module.exports = function(schema, option) {
         } else {
             const type = schema.componentName.toLowerCase();
 
-            if (['page', 'block', 'component'].indexOf(type) !== -1) {
+            if (['page', 'component'].indexOf(type) !== -1) {
                 // 容器组件处理: state/method/dataSource/lifeCycle/render
                 const init = [];
 
