@@ -484,7 +484,9 @@ module.exports = function(schema, option) {
                 panelName: `index.vue`,
                 panelValue: prettier.format(`
           <template>
+              <div class="imgcook-container"> 
               ${template}
+              </div>
           </template>
           <script>
             ${imports.join('\n')}

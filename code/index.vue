@@ -1,5 +1,7 @@
 <template>
-  <div class="page" />
+  <div class="imgcook-container">
+    <div class="page" />
+  </div>
 </template>
 <script>
 export default {
